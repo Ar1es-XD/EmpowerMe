@@ -12,16 +12,21 @@
 <body>
 
 <!-- NAV -->
-<nav id="nav">
-  <a href="#" class="nav-logo">Empower<span>Me</span></a>
-  <ul class="nav-links">
-    <li><a href="#how">How It Works</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#usecases">Use Cases</a></li>
-    <li><a href="#faq">FAQ</a></li>
-  </ul>
-  <a href="#cta" class="nav-cta">Get Started Free</a>
-</nav>
+<div class="nav-pill" role="navigation" aria-label="Page navigation">
+  <button class="menu-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="topMenuPanel">
+    <span class="hamburger">☰</span>
+    Menu
+  </button>
+  <button class="theme-pill" type="button" aria-label="Toggle theme">☀</button>
+  <div class="percent-pill">0%</div>
+
+  <div class="menu-panel" id="topMenuPanel" aria-hidden="true">
+    <button class="menu-item" type="button" data-target="home">Home</button>
+    <button class="menu-item" type="button" data-target="how">How It Works</button>
+    <button class="menu-item" type="button" data-target="features">Features</button>
+    <button class="menu-item" type="button" data-target="faq">FAQ</button>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero" id="home">
@@ -148,8 +153,8 @@
             </svg>
           </div>
         </div>
-        <button class="demo-submit" onclick="triggerDemo()">Explain My Rights →</button>
-        <div class="demo-result" id="demoResult" style="display:none">
+        <button class="demo-submit" type="button">Explain My Rights →</button>
+        <div class="demo-result hidden" id="demoResult">
           <div class="demo-result-tag">EmpowerMe Identified</div>
           <div class="demo-result-pills">
             <span class="dpill active">📖 Wage &amp; Hour Law</span>
@@ -210,7 +215,7 @@
       <p class="section-label">Who It Helps</p>
       <h2 class="section-h2">Legal clarity for<br><em>every situation</em>.</h2>
     </div>
-    <p class="section-body" style="max-width:300px">EmpowerMe covers the legal situations real people face every day — not just the ones lawyers advertise for.</p>
+    <p class="section-body section-body--compact">EmpowerMe covers the legal situations real people face every day — not just the ones lawyers advertise for.</p>
   </div>
   <div class="cases-grid reveal">
     <div class="case-card">
@@ -246,39 +251,39 @@
     <div class="reveal">
       <p class="section-label">Questions</p>
       <h2 class="section-h2">Not<br><em>legalese.</em><br>Real answers.</h2>
-      <p class="section-body" style="margin-top:24px">Everything you want to know before you trust us with your legal questions.</p>
+      <p class="section-body section-body--spaced">Everything you want to know before you trust us with your legal questions.</p>
     </div>
     <div class="faq-list reveal">
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button">
           Is EmpowerMe a substitute for a real lawyer?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-a">No. EmpowerMe provides legal information, not legal advice. Think of it as a highly informed friend who explains the law clearly. For serious matters, we'll always point you toward qualified legal help.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button">
           Which countries and jurisdictions are covered?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-a">Currently we focus on US federal and state law, with UK and Indian law in active development. Multilingual and multi-jurisdiction support is our top roadmap priority.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button">
           Is my information kept private?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-a">Yes. We do not store your legal queries tied to any personally identifiable information. Sessions are ephemeral and encrypted in transit. We will never sell your data.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button">
           How accurate is the legal information?
           <span class="faq-icon">+</span>
         </button>
         <div class="faq-a">Our information is regularly reviewed and sourced from official statutes, government resources, and verified legal databases. We always show our sources and flag when laws vary by state or region.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" type="button">
           Can I use voice input in any language?
           <span class="faq-icon">+</span>
         </button>
@@ -294,10 +299,10 @@
     <h2 class="cta-h2">Your rights are real.<br><em>Use them.</em></h2>
     <p class="cta-sub">EmpowerMe is free to use. No account required to ask your first question. Understand your rights in under two minutes.</p>
     <div class="cta-actions">
-      <a href="#how" class="btn-primary" style="font-size:14px; padding:16px 40px">
+      <a href="#how" class="btn-primary btn-primary--compact">
         Ask Your First Question →
       </a>
-      <a href="#features" class="btn-ghost" style="font-size:14px">Explore Features</a>
+      <a href="#features" class="btn-ghost btn-ghost--compact">Explore Features</a>
     </div>
   </div>
 </section>
@@ -314,61 +319,6 @@
   <span>Made with ❤️ for legal accessibility</span>
 </footer>
 
-<script>
-  // Sticky nav on scroll
-  const nav = document.getElementById('nav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  });
-
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.12 });
-  reveals.forEach(r => observer.observe(r));
-
-  // FAQ accordion
-  function toggleFaq(btn) {
-    const item = btn.closest('.faq-item');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
-
-  // Demo card reveal
-  function triggerDemo() {
-    const result = document.getElementById('demoResult');
-    result.style.display = 'block';
-    result.style.opacity = '0';
-    result.style.transform = 'translateY(10px)';
-    result.style.transition = 'opacity .4s ease, transform .4s ease';
-    requestAnimationFrame(() => {
-      result.style.opacity = '1';
-      result.style.transform = 'translateY(0)';
-    });
-  }
-
-  // Stagger how-steps on scroll
-  document.querySelectorAll('.how-step').forEach((step, i) => {
-    step.style.opacity = '0';
-    step.style.transform = 'translateX(-20px)';
-    step.style.transition = `opacity .6s ${i * .12}s ease, transform .6s ${i * .12}s ease`;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        step.style.opacity = '1';
-        step.style.transform = 'translateX(0)';
-        obs.unobserve(step);
-      }
-    }, { threshold: 0.15 });
-    obs.observe(step);
-  });
-</script>
-
+<script src="home-theme.js" defer></script>
 </body>
 </html>
