@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EmpowerMe — Know Your Rights</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="Landingpage.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-pill" role="navigation" aria-label="Page navigation">
+  <button class="menu-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="topMenuPanel">
+    <span class="hamburger">☰</span>
+    Menu
+  </button>
+  <button class="theme-pill" type="button" aria-label="Toggle theme">☀</button>
+  <div class="percent-pill">0%</div>
+
+  <div class="menu-panel" id="topMenuPanel" aria-hidden="true">
+    <button class="menu-item" type="button" data-target="home">Home</button>
+    <button class="menu-item" type="button" data-target="how">How It Works</button>
+    <button class="menu-item" type="button" data-target="features">Features</button>
+    <button class="menu-item" type="button" data-target="faq">FAQ</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-left">
+    <p class="hero-eyebrow">⚖️ Legal Rights, Simplified</p>
+    <h1 class="hero-h1">Know your rights.<br><em>Actually</em> know them.</h1>
+    <p class="hero-sub">Type or speak your legal concern and receive plain-language explanations, consequences, and exact next steps — no lawyer required.</p>
+    <div class="hero-actions">
+      <a href="#how" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+        </svg>
+        Ask a Question
+      </a>
+      <a href="#features" class="btn-ghost">See How It Works</a>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      Scroll to explore
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-right-inner">
+      <div class="floating-cards">
+        <div class="fcard">
+          <div class="fcard-tag">Tenant Law</div>
+          <div class="fcard-title">"Can my landlord enter without notice?"</div>
+          <div class="fcard-body">In most states, landlords must give 24–48 hours advance notice before entering — except in emergencies.</div>
+          <span class="fcard-pill">✅ You're protected</span>
+        </div>
+        <div class="fcard">
+          <div class="fcard-tag">Employment</div>
+          <div class="fcard-title">"Was I fired illegally?"</div>
+          <div class="fcard-body">If termination was based on race, gender, disability, or retaliation for whistleblowing, you may have a wrongful dismissal claim.</div>
+          <span class="fcard-pill">⚠️ File within 180 days</span>
+        </div>
+        <div class="fcard">
+          <div class="fcard-tag">Consumer Rights</div>
+          <div class="fcard-title">"The store won't refund a defective product."</div>
+          <div class="fcard-body">Under warranty law you're entitled to repair, replacement, or refund within the statutory period. You can escalate to a consumer forum.</div>
+          <span class="fcard-pill">📋 3 recommended steps</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticker -->
+    <div class="ticker-wrap">
+      <div class="ticker-track">
+        <span class="ticker-item"><span class="ticker-dot"></span>Tenant Rights</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Employment Law</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Consumer Protection</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Family Law</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Civil Rights</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Criminal Procedure</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Immigration</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Disability Rights</span>
+        <!-- duplicated for seamless loop -->
+        <span class="ticker-item"><span class="ticker-dot"></span>Tenant Rights</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Employment Law</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Consumer Protection</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Family Law</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Civil Rights</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Criminal Procedure</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Immigration</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>Disability Rights</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="reveal">
+    <p class="section-label">How It Works</p>
+    <h2 class="section-h2">From concern to <em>clarity</em><br>in four steps.</h2>
+  </div>
+  <div class="how-grid">
+    <div class="how-steps reveal">
+      <div class="how-step">
+        <span class="step-num">01</span>
+        <div class="step-content">
+          <div class="step-title">Describe your situation</div>
+          <div class="step-desc">Type or speak your legal concern in plain, everyday language. No legal jargon needed — just tell us what happened.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="step-num">02</span>
+        <div class="step-content">
+          <div class="step-title">Receive plain-language explanation</div>
+          <div class="step-desc">EmpowerMe identifies the relevant laws, translates them into clear language, and surfaces exactly what protections apply to you.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="step-num">03</span>
+        <div class="step-content">
+          <div class="step-title">Understand the consequences</div>
+          <div class="step-desc">See what could happen if you act — or don't. Timelines, penalties, and outcomes presented without frightening legalese.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="step-num">04</span>
+        <div class="step-content">
+          <div class="step-title">Take action with confidence</div>
+          <div class="step-desc">Get a prioritized list of next steps: who to contact, what to document, where to file a complaint, and when to seek legal aid.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="demo-card">
+        <div class="demo-label">Try a question</div>
+        <div class="demo-input-wrap">
+          <textarea
+            class="demo-textarea"
+            id="demoInput"
+            placeholder="e.g. My employer hasn't paid me for 3 weeks — what are my rights?"
+          ></textarea>
+          <div class="demo-mic" title="Voice input">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zm-1 14.93V19h-2v2h6v-2h-2v-2.07A7.002 7.002 0 0 0 19 12v-2h-2v2a5 5 0 0 1-10 0v-2H5v2a7.002 7.002 0 0 0 6 6.93z"/>
+            </svg>
+          </div>
+        </div>
+        <button class="demo-submit" type="button">Explain My Rights →</button>
+        <div class="demo-result hidden" id="demoResult">
+          <div class="demo-result-tag">EmpowerMe Identified</div>
+          <div class="demo-result-pills">
+            <span class="dpill active">📖 Wage &amp; Hour Law</span>
+            <span class="dpill active">⚠️ File within 2 years</span>
+            <span class="dpill">✅ Contact Labor Board</span>
+            <span class="dpill">🤝 Legal Aid Available</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="reveal">
+    <p class="section-label">Features</p>
+    <h2 class="section-h2">Everything you need<br>to <em>stand your ground</em>.</h2>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feat-card">
+      <div class="feat-icon">🎤</div>
+      <div class="feat-title">Voice-Powered Input</div>
+      <div class="feat-desc">Speak naturally in your own language. Speech-to-text converts your words into a legal query instantly, no typing required.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📖</div>
+      <div class="feat-title">Plain-Language Explanations</div>
+      <div class="feat-desc">Dense legal statutes broken into digestible, human sentences. We strip the jargon so the law actually makes sense.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⚠️</div>
+      <div class="feat-title">Consequence Mapping</div>
+      <div class="feat-desc">Understand exactly what's at stake — deadlines, penalties, and outcomes — so you can make informed decisions fast.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">✅</div>
+      <div class="feat-title">Actionable Next Steps</div>
+      <div class="feat-desc">A ranked, step-by-step action plan tailored to your situation: who to call, what to save, where to file.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔍</div>
+      <div class="feat-title">Smart Legal Search</div>
+      <div class="feat-desc">Intelligent filtering surfaces the most relevant statutes, precedents, and guidance across multiple legal domains.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🤝</div>
+      <div class="feat-title">Legal Aid Connections</div>
+      <div class="feat-desc">We connect you with free and low-cost legal aid organizations, pro bono services, and ombudsmen near you.</div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section id="usecases">
+  <div class="cases-header reveal">
+    <div>
+      <p class="section-label">Who It Helps</p>
+      <h2 class="section-h2">Legal clarity for<br><em>every situation</em>.</h2>
+    </div>
+    <p class="section-body section-body--compact">EmpowerMe covers the legal situations real people face every day — not just the ones lawyers advertise for.</p>
+  </div>
+  <div class="cases-grid reveal">
+    <div class="case-card">
+      <div class="case-area">Tenant &amp; Housing</div>
+      <div class="case-title">Facing eviction or landlord harassment?</div>
+      <div class="case-desc">Understand your notice rights, habitability protections, and security deposit laws. Know what your landlord can and cannot legally do.</div>
+      <div class="case-arrow">→</div>
+    </div>
+    <div class="case-card">
+      <div class="case-area">Employment &amp; Wages</div>
+      <div class="case-title">Unpaid wages, wrongful termination, or workplace discrimination?</div>
+      <div class="case-desc">Know your protections under labor law, filing windows for claims, and what evidence to preserve from day one.</div>
+      <div class="case-arrow">→</div>
+    </div>
+    <div class="case-card">
+      <div class="case-area">Consumer Rights</div>
+      <div class="case-title">Defective products, scams, or unfair contracts?</div>
+      <div class="case-desc">Navigate warranty claims, chargebacks, and consumer protection filings without needing to hire a lawyer for a $200 dispute.</div>
+      <div class="case-arrow">→</div>
+    </div>
+    <div class="case-card">
+      <div class="case-area">Civil &amp; Constitutional</div>
+      <div class="case-title">Police encounter, unlawful search, or rights violation?</div>
+      <div class="case-desc">Understand your Fourth and Fifth Amendment rights in plain English, and what steps to take if they were violated.</div>
+      <div class="case-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="faq-cols">
+    <div class="reveal">
+      <p class="section-label">Questions</p>
+      <h2 class="section-h2">Not<br><em>legalese.</em><br>Real answers.</h2>
+      <p class="section-body section-body--spaced">Everything you want to know before you trust us with your legal questions.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          Is EmpowerMe a substitute for a real lawyer?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">No. EmpowerMe provides legal information, not legal advice. Think of it as a highly informed friend who explains the law clearly. For serious matters, we'll always point you toward qualified legal help.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          Which countries and jurisdictions are covered?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Currently we focus on US federal and state law, with UK and Indian law in active development. Multilingual and multi-jurisdiction support is our top roadmap priority.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          Is my information kept private?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Yes. We do not store your legal queries tied to any personally identifiable information. Sessions are ephemeral and encrypted in transit. We will never sell your data.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          How accurate is the legal information?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Our information is regularly reviewed and sourced from official statutes, government resources, and verified legal databases. We always show our sources and flag when laws vary by state or region.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          Can I use voice input in any language?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">Voice input currently supports English, Spanish, French, and Hindi. We're expanding language support based on user demand — let us know what language you need.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="reveal">
+    <h2 class="cta-h2">Your rights are real.<br><em>Use them.</em></h2>
+    <p class="cta-sub">EmpowerMe is free to use. No account required to ask your first question. Understand your rights in under two minutes.</p>
+    <div class="cta-actions">
+      <a href="#how" class="btn-primary btn-primary--compact">
+        Ask Your First Question →
+      </a>
+      <a href="#features" class="btn-ghost btn-ghost--compact">Explore Features</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Empower<span>Me</span></a>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">About</a>
+    <a href="#">GitHub</a>
+  </div>
+  <span>Made with ❤️ for legal accessibility</span>
+</footer>
+
+<script src="home-theme.js" defer></script>
+</body>
+</html>

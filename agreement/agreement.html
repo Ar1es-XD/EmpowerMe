@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agreement</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="box">
+        <div class="header">
+          <h1>Your Agreement</h1>
+          <p>
+            Before you move forward, you are entering into a legal agreement
+            with us
+          </p>
+        </div>
+        <div class="body">
+          <p>
+            1. DATA SECURITY <br />Your information and conversations are
+            securely stored using encryption and reasonable security measures.
+            We aim to protect your privacy and keep your data safe.
+          </p>
+        </div>
+        <div class="body">
+          <p>
+            2. API & INTERNET-BASED INFORMATION <br />This platform is powered
+            by AI APIs and internet-based legal information sources. The
+            guidance provided is generated automatically and may not always be
+            fully accurate, complete, or up to date.
+          </p>
+        </div>
+        <div class="body">
+          <p>
+            3. NOT OFFICIAL LEGAL ADVICE <br />The platform is designed for
+            awareness and educational purposes only. It does not replace a
+            certified lawyer, legal consultant, or government authority.
+          </p>
+        </div>
+        <div class="body">
+          <p>
+            4. LIMITATION OF RESPONSIBILITY <br />By continuing, you acknowledge
+            that any decisions or actions taken based on the platform’s
+            responses are entirely your responsibility. The platform owners,
+            developers, and providers will not be held liable for any loss,
+            damage, misunderstanding, or legal consequence arising from the use
+            of this service.
+          </p>
+        </div>
+        <div class="body">
+          <p>
+            5. USER CONSENT <br />You agree not to misuse the platform or submit
+            false, harmful, or illegal content while using the service.
+          </p>
+        </div>
+        <label class="checkbox-container">
+          <input type="checkbox" id="agree" />
+          <span> I understand and agree to the terms and conditions. </span>
+        </label>
+        <br><br>
+
+        <button id="continueBtn" disabled>AGREE & CONTINUE</button>
+
+        <script>
+          const checkbox = document.getElementById("agree");
+          const button = document.getElementById("continueBtn");
+
+          checkbox.addEventListener("change", () => {
+            button.disabled = !checkbox.checked;
+          });
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
