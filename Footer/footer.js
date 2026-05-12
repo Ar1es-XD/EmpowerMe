@@ -7,12 +7,12 @@
     const theme = storedTheme || (prefersDark ? 'dark' : 'light');
     body.classList.toggle('dark', theme === 'dark');
 
-    const ROWS = 15;
-    const RADIUS = 3.2;
-    const BASE_A = 0.12;
-    const CURSOR_R = 160;
-    const DISPLAY_MS = 3800;
-    const FADE_MS = 950;
+    const ROWS = 20;
+    const RADIUS = 4.1;
+    const BASE_A = 0.16;
+    const CURSOR_R = 190;
+    const DISPLAY_MS = 4200;
+    const FADE_MS = 2400;
 
     const footer = document.querySelector('.site-footer');
     const canvas = document.getElementById('dot-canvas');
@@ -32,6 +32,10 @@
 
     function clamp(val, min, max) {
         return Math.min(max, Math.max(min, val));
+    }
+
+    function easeInOut(t) {
+        return t * t * (3 - 2 * t);
     }
 
     function parseColor(value) {
@@ -69,48 +73,82 @@
     }
 
     const procs = [
+        // Scales
         function (nx, ny) {
             const { x, y } = getXY(nx, ny);
-            const head = Math.abs(x - 0.35) < 0.2 && Math.abs(y + 0.1) < 0.12;
-            const handle = Math.abs(y - 0.22) < 0.08 && x > -0.7 && x < 0.18;
-            const grip = (x + 0.65) ** 2 + (y - 0.22) ** 2 < 0.03;
-            return (head || handle || grip) ? 1 : 0;
-        },
-        function (nx, ny) {
-            const { x, y } = getXY(nx, ny);
-            const stem = Math.abs(x) < 0.06 && y > -0.5 && y < 0.65;
-            const beam = Math.abs(y + 0.3) < 0.07 && Math.abs(x) < 0.65;
-            const panLeft = (x + 0.5) ** 2 + (y + 0.1) ** 2 < 0.09;
-            const panRight = (x - 0.5) ** 2 + (y + 0.1) ** 2 < 0.09;
+            const stem = Math.abs(x) < 0.07 && y > -0.7 && y < 0.75;
+            const beam = Math.abs(y + 0.3) < 0.08 && Math.abs(x) < 0.75;
+            const panLeft = (x + 0.58) ** 2 + (y + 0.05) ** 2 < 0.13;
+            const panRight = (x - 0.58) ** 2 + (y + 0.05) ** 2 < 0.13;
+            const base = Math.abs(y - 0.75) < 0.07 && Math.abs(x) < 0.3;
             return (stem || beam || panLeft || panRight) ? 1 : 0;
         },
+        // Shield
         function (nx, ny) {
             const { x, y } = getXY(nx, ny);
-            const left = x > -0.75 && x < -0.05 && y > -0.6 && y < 0.6;
-            const right = x > 0.05 && x < 0.75 && y > -0.6 && y < 0.6;
-            const spine = Math.abs(x) < 0.08 && y > -0.6 && y < 0.6;
-            return (left || right || spine) ? 1 : 0;
+            const top = Math.abs(y + 0.62) < 0.1 && Math.abs(x) < 0.5;
+            const sides = Math.abs(x) < 0.5 && y > -0.6 && y < 0.35;
+            const tip = Math.abs(x) + (y - 0.62) * 1.25 < 0.5;
+            return top || (sides && y < 0.35) || tip ? 1 : 0;
         },
+        // Torch
         function (nx, ny) {
             const { x, y } = getXY(nx, ny);
-            const sx = x * 1.1;
-            const sy = y * 1.1;
-            const heart = Math.pow(sx * sx + sy * sy - 1, 3) - sx * sx * sy * sy * sy;
-            return heart <= 0 ? 1 : 0;
+            const flame = (x * x) / 0.14 + ((y + 0.65) * (y + 0.65)) / 0.18 < 1;
+            const flameTip = (x * x) / 0.08 + ((y + 0.78) * (y + 0.78)) / 0.08 < 1;
+            const neck = Math.abs(y + 0.22) < 0.07 && Math.abs(x) < 0.18;
+            const handle = Math.abs(x) < 0.09 && y > -0.05 && y < 0.75;
+            const base = Math.abs(y - 0.05) < 0.08 && Math.abs(x) < 0.24;
+            return flame || flameTip || neck || handle || base ? 1 : 0;
         },
+        // Network nodes
         function (nx, ny) {
             const { x, y } = getXY(nx, ny);
-            const head = x * x + (y + 0.6) * (y + 0.6) < 0.08;
-            const body = Math.abs(x) < 0.28 && y > -0.35 && y < 0.6;
-            const skirt = Math.abs(x) + (y - 0.6) * 0.8 < 0.55;
-            const sword = Math.abs(x - 0.55) < 0.05 && y > -0.55 && y < 0.7;
-            return (head || body || skirt || sword) ? 1 : 0;
+            const core = x * x + y * y < 0.14;
+            const tl = (x + 0.45) ** 2 + (y + 0.45) ** 2 < 0.08;
+            const tr = (x - 0.45) ** 2 + (y + 0.45) ** 2 < 0.08;
+            const bl = (x + 0.45) ** 2 + (y - 0.45) ** 2 < 0.08;
+            const br = (x - 0.45) ** 2 + (y - 0.45) ** 2 < 0.08;
+            const linkH = Math.abs(y) < 0.07 && Math.abs(x) < 0.45;
+            const linkV = Math.abs(x) < 0.07 && Math.abs(y) < 0.45;
+            return core || tl || tr || bl || br || linkH || linkV ? 1 : 0;
+        },
+        // Open door
+        function (nx, ny) {
+            const { x, y } = getXY(nx, ny);
+            const left = Math.abs(x + 0.45) < 0.09 && y > -0.75 && y < 0.75;
+            const top = Math.abs(y + 0.75) < 0.07 && x > -0.45 && x < 0.45;
+            const base = Math.abs(y - 0.75) < 0.07 && x > -0.45 && x < 0.45;
+            const door = x > -0.05 && x < 0.5 && y > -0.6 && y < 0.6;
+            const gap = x > -0.05 && x < 0.12 && y > -0.6 && y < 0.6;
+            const knob = (x + 0.02) ** 2 + (y - 0.05) ** 2 < 0.02;
+            return left || top || base || (door && !gap) || knob ? 1 : 0;
         }
     ];
 
+    const CENTER_BOUNDS = {
+        xMin: 0.34,
+        xMax: 0.66,
+        yMin: 0.2,
+        yMax: 0.8
+    };
+
     function mapFromProc(fn) {
         const map = new Float32Array(dots.length);
-        dots.forEach((dot, i) => { map[i] = fn(dot.nx, dot.ny); });
+        const width = CENTER_BOUNDS.xMax - CENTER_BOUNDS.xMin;
+        const height = CENTER_BOUNDS.yMax - CENTER_BOUNDS.yMin;
+        dots.forEach((dot, i) => {
+            if (
+                dot.nx < CENTER_BOUNDS.xMin || dot.nx > CENTER_BOUNDS.xMax ||
+                dot.ny < CENTER_BOUNDS.yMin || dot.ny > CENTER_BOUNDS.yMax
+            ) {
+                map[i] = 0;
+                return;
+            }
+            const nx = (dot.nx - CENTER_BOUNDS.xMin) / width;
+            const ny = (dot.ny - CENTER_BOUNDS.yMin) / height;
+            map[i] = fn(nx, ny);
+        });
         return map;
     }
 
@@ -131,7 +169,7 @@
 
         const rows = ROWS;
         const spacing = canvas.height / (rows + 1);
-        const cols = Math.max(12, Math.floor(canvas.width / spacing) - 1);
+        const cols = Math.max(16, Math.floor(canvas.width / spacing) - 1);
 
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
@@ -164,7 +202,8 @@
             lastSwitch = ts;
             fadeT = 0;
         } else if (elapsed > DISPLAY_MS - FADE_MS) {
-            fadeT = clamp((elapsed - (DISPLAY_MS - FADE_MS)) / FADE_MS, 0, 1);
+            const rawT = clamp((elapsed - (DISPLAY_MS - FADE_MS)) / FADE_MS, 0, 1);
+            fadeT = easeInOut(rawT);
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -179,8 +218,8 @@
             const dist = Math.hypot(dx, dy);
             const cf = dist < CURSOR_R ? Math.pow(1 - dist / CURSOR_R, 2) : 0;
             const pf = getBrightness(i);
-            const alpha = Math.min(1, BASE_A + cf * 0.9 + pf * 0.85);
-            const dotRadius = Math.max(1.2, RADIUS * (1 - cf * 0.6));
+            const alpha = Math.min(1, BASE_A + cf * 0.5 + pf * 0.85);
+            const dotRadius = Math.max(1.6, RADIUS * (1 - cf * 0.45));
 
             ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha.toFixed(3)})`;
             ctx.beginPath();
