@@ -7,12 +7,13 @@
     const theme = storedTheme || (prefersDark ? 'dark' : 'light');
     body.classList.toggle('dark', theme === 'dark');
 
-    const ROWS = 20;
-    const RADIUS = 4.1;
+    const SPACING = 20;
+    const DOT_SIZE = 7.6;
+    const RADIUS = DOT_SIZE / 2;
     const BASE_A = 0.16;
-    const CURSOR_R = 190;
-    const DISPLAY_MS = 4200;
-    const FADE_MS = 2400;
+    const CURSOR_R = 170;
+    const DISPLAY_MS = 4000;
+    const FADE_MS = 900;
 
     const footer = document.querySelector('.site-footer');
     const canvas = document.getElementById('dot-canvas');
@@ -72,89 +73,111 @@
         return { x, y };
     }
 
-    const procs = [
-        // Scales
-        function (nx, ny) {
-            const { x, y } = getXY(nx, ny);
-            const stem = Math.abs(x) < 0.07 && y > -0.7 && y < 0.75;
-            const beam = Math.abs(y + 0.3) < 0.08 && Math.abs(x) < 0.75;
-            const panLeft = (x + 0.58) ** 2 + (y + 0.05) ** 2 < 0.13;
-            const panRight = (x - 0.58) ** 2 + (y + 0.05) ** 2 < 0.13;
-            const base = Math.abs(y - 0.75) < 0.07 && Math.abs(x) < 0.3;
-            return (stem || beam || panLeft || panRight) ? 1 : 0;
-        },
-        // Shield
-        function (nx, ny) {
-            const { x, y } = getXY(nx, ny);
-            const top = Math.abs(y + 0.62) < 0.1 && Math.abs(x) < 0.5;
-            const sides = Math.abs(x) < 0.5 && y > -0.6 && y < 0.35;
-            const tip = Math.abs(x) + (y - 0.62) * 1.25 < 0.5;
-            return top || (sides && y < 0.35) || tip ? 1 : 0;
-        },
-        // Torch
-        function (nx, ny) {
-            const { x, y } = getXY(nx, ny);
-            const flame = (x * x) / 0.14 + ((y + 0.65) * (y + 0.65)) / 0.18 < 1;
-            const flameTip = (x * x) / 0.08 + ((y + 0.78) * (y + 0.78)) / 0.08 < 1;
-            const neck = Math.abs(y + 0.22) < 0.07 && Math.abs(x) < 0.18;
-            const handle = Math.abs(x) < 0.09 && y > -0.05 && y < 0.75;
-            const base = Math.abs(y - 0.05) < 0.08 && Math.abs(x) < 0.24;
-            return flame || flameTip || neck || handle || base ? 1 : 0;
-        },
-        // Network nodes
-        function (nx, ny) {
-            const { x, y } = getXY(nx, ny);
-            const core = x * x + y * y < 0.14;
-            const tl = (x + 0.45) ** 2 + (y + 0.45) ** 2 < 0.08;
-            const tr = (x - 0.45) ** 2 + (y + 0.45) ** 2 < 0.08;
-            const bl = (x + 0.45) ** 2 + (y - 0.45) ** 2 < 0.08;
-            const br = (x - 0.45) ** 2 + (y - 0.45) ** 2 < 0.08;
-            const linkH = Math.abs(y) < 0.07 && Math.abs(x) < 0.45;
-            const linkV = Math.abs(x) < 0.07 && Math.abs(y) < 0.45;
-            return core || tl || tr || bl || br || linkH || linkV ? 1 : 0;
-        },
-        // Open door
-        function (nx, ny) {
-            const { x, y } = getXY(nx, ny);
-            const left = Math.abs(x + 0.45) < 0.09 && y > -0.75 && y < 0.75;
-            const top = Math.abs(y + 0.75) < 0.07 && x > -0.45 && x < 0.45;
-            const base = Math.abs(y - 0.75) < 0.07 && x > -0.45 && x < 0.45;
-            const door = x > -0.05 && x < 0.5 && y > -0.6 && y < 0.6;
-            const gap = x > -0.05 && x < 0.12 && y > -0.6 && y < 0.6;
-            const knob = (x + 0.02) ** 2 + (y - 0.05) ** 2 < 0.02;
-            return left || top || base || (door && !gap) || knob ? 1 : 0;
-        }
+    const SVG_SPACING = 20;
+    const SVG_ORIGIN_X = 20;
+    const SVG_ORIGIN_Y = 40;
+    const SVG_COLS = 78;
+    const SVG_ROWS = 16;
+    let gridCols = 0;
+    let gridRows = 0;
+
+    function toGrid(x, y) {
+        const col = Math.round((x - SVG_ORIGIN_X) / SVG_SPACING);
+        const row = Math.round((y - SVG_ORIGIN_Y) / SVG_SPACING);
+        return { col, row };
+    }
+
+    function makeShape(points) {
+        const cols = points.map((p) => p.col);
+        const rows = points.map((p) => p.row);
+        const minCol = Math.min(...cols);
+        const maxCol = Math.max(...cols);
+        const minRow = Math.min(...rows);
+        const maxRow = Math.max(...rows);
+        return {
+            points,
+            centerX: (minCol + maxCol) / 2,
+            centerY: (minRow + maxRow) / 2
+        };
+    }
+
+    const shapes = [
+        makeShape([
+            toGrid(720, 120), toGrid(760, 100), toGrid(800, 90), toGrid(840, 100), toGrid(880, 120),
+            toGrid(700, 140), toGrid(740, 140), toGrid(780, 140), toGrid(820, 140), toGrid(860, 140), toGrid(900, 140),
+            toGrid(700, 180), toGrid(740, 180), toGrid(780, 180), toGrid(820, 180), toGrid(860, 180), toGrid(900, 180),
+            toGrid(720, 220), toGrid(760, 220), toGrid(800, 220), toGrid(840, 220), toGrid(880, 220),
+            toGrid(740, 260), toGrid(780, 260), toGrid(820, 260), toGrid(860, 260),
+            toGrid(760, 300), toGrid(800, 300), toGrid(840, 300),
+            toGrid(800, 340)
+        ]),
+        makeShape([
+            toGrid(800, 90),
+            toGrid(700, 130), toGrid(740, 130), toGrid(780, 130), toGrid(820, 130), toGrid(860, 130), toGrid(900, 130),
+            toGrid(800, 170), toGrid(800, 210), toGrid(800, 250), toGrid(800, 290),
+            toGrid(740, 170), toGrid(720, 210),
+            toGrid(860, 170), toGrid(880, 210),
+            toGrid(680, 250), toGrid(720, 250), toGrid(760, 250),
+            toGrid(700, 290), toGrid(720, 290), toGrid(740, 290),
+            toGrid(840, 250), toGrid(880, 250), toGrid(920, 250),
+            toGrid(860, 290), toGrid(880, 290), toGrid(900, 290),
+            toGrid(760, 340), toGrid(800, 340), toGrid(840, 340)
+        ]),
+        makeShape([
+            toGrid(820, 90),
+            toGrid(800, 110), toGrid(840, 110),
+            toGrid(780, 140), toGrid(820, 140), toGrid(850, 140),
+            toGrid(790, 170), toGrid(820, 170), toGrid(850, 170),
+            toGrid(790, 210), toGrid(820, 210), toGrid(850, 210),
+            toGrid(800, 250), toGrid(790, 290), toGrid(780, 330)
+        ]),
+        makeShape([
+            toGrid(800, 220),
+            toGrid(740, 170),
+            toGrid(860, 150),
+            toGrid(920, 220),
+            toGrid(860, 310),
+            toGrid(700, 270)
+        ]),
+        makeShape([
+            toGrid(740, 120), toGrid(780, 120), toGrid(820, 120), toGrid(860, 120),
+            toGrid(740, 160), toGrid(740, 200), toGrid(740, 240), toGrid(740, 280),
+            toGrid(860, 160), toGrid(860, 200), toGrid(860, 240), toGrid(860, 280),
+            toGrid(820, 160), toGrid(840, 190), toGrid(840, 230), toGrid(820, 260),
+            toGrid(830, 210)
+        ])
     ];
 
-    const CENTER_BOUNDS = {
-        xMin: 0.34,
-        xMax: 0.66,
-        yMin: 0.2,
-        yMax: 0.8
-    };
-
-    function mapFromProc(fn) {
+    function mapFromShape(shape) {
         const map = new Float32Array(dots.length);
-        const width = CENTER_BOUNDS.xMax - CENTER_BOUNDS.xMin;
-        const height = CENTER_BOUNDS.yMax - CENTER_BOUNDS.yMin;
+        const scaleX = (gridCols - 1) / (SVG_COLS - 1);
+        const scaleY = (gridRows - 1) / (SVG_ROWS - 1);
+        const scaledPoints = shape.points.map((p) => ({
+            col: Math.round(p.col * scaleX),
+            row: Math.round(p.row * scaleY)
+        }));
+        const cols = scaledPoints.map((p) => p.col);
+        const rows = scaledPoints.map((p) => p.row);
+        const minCol = Math.min(...cols);
+        const maxCol = Math.max(...cols);
+        const minRow = Math.min(...rows);
+        const maxRow = Math.max(...rows);
+        const centerX = (minCol + maxCol) / 2;
+        const centerY = (minRow + maxRow) / 2;
+        const offsetX = Math.round((gridCols - 1) / 2 - centerX);
+        const offsetY = Math.round((gridRows - 1) / 2 - centerY);
+        const keySet = new Set(scaledPoints.map((p) => `${p.col},${p.row}`));
+
         dots.forEach((dot, i) => {
-            if (
-                dot.nx < CENTER_BOUNDS.xMin || dot.nx > CENTER_BOUNDS.xMax ||
-                dot.ny < CENTER_BOUNDS.yMin || dot.ny > CENTER_BOUNDS.yMax
-            ) {
-                map[i] = 0;
-                return;
-            }
-            const nx = (dot.nx - CENTER_BOUNDS.xMin) / width;
-            const ny = (dot.ny - CENTER_BOUNDS.yMin) / height;
-            map[i] = fn(nx, ny);
+            const key = `${dot.col - offsetX},${dot.row - offsetY}`;
+            map[i] = keySet.has(key) ? 1 : 0;
         });
         return map;
     }
 
     function buildAllMaps() {
         brightnessMaps = [];
-        procs.forEach((fn) => brightnessMaps.push(mapFromProc(fn)));
+        shapes.forEach((shape) => brightnessMaps.push(mapFromShape(shape)));
         curIdx = 0;
         nextIdx = 1 % brightnessMaps.length;
         fadeT = 1;
@@ -167,17 +190,23 @@
         canvas.height = canvas.offsetHeight || 280;
         dots = [];
 
-        const rows = ROWS;
-        const spacing = canvas.height / (rows + 1);
-        const cols = Math.max(16, Math.floor(canvas.width / spacing) - 1);
+        const padding = Math.max(6, RADIUS + 2);
+        const usableHeight = Math.max(1, canvas.height - padding * 2);
+        const usableWidth = Math.max(1, canvas.width - padding * 2);
+        const rows = Math.max(2, Math.floor(usableHeight / SPACING) + 1);
+        const cols = Math.max(16, Math.floor(usableWidth / SPACING) + 1);
+        gridRows = rows;
+        gridCols = cols;
 
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
                 dots.push({
-                    x: (c + 1) * spacing,
-                    y: (r + 1) * spacing,
-                    nx: (c + 1) / (cols + 1),
-                    ny: (r + 1) / (rows + 1)
+                    x: padding + c * SPACING,
+                    y: padding + r * SPACING,
+                    col: c,
+                    row: r,
+                    nx: cols > 1 ? c / (cols - 1) : 0.5,
+                    ny: rows > 1 ? r / (rows - 1) : 0.5
                 });
             }
         }
@@ -216,15 +245,22 @@
             const dx = dot.x - mx;
             const dy = dot.y - my;
             const dist = Math.hypot(dx, dy);
-            const cf = dist < CURSOR_R ? Math.pow(1 - dist / CURSOR_R, 2) : 0;
+            const cf = CURSOR_R > 0 && dist < CURSOR_R ? Math.pow(1 - dist / CURSOR_R, 2) : 0;
             const pf = getBrightness(i);
-            const alpha = Math.min(1, BASE_A + cf * 0.5 + pf * 0.85);
-            const dotRadius = Math.max(1.6, RADIUS * (1 - cf * 0.45));
+            const dotRadius = RADIUS;
 
-            ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha.toFixed(3)})`;
+            const baseAlpha = Math.min(1, BASE_A + cf * 0.28);
+            ctx.fillStyle = `rgba(255, 255, 255, ${baseAlpha.toFixed(3)})`;
             ctx.beginPath();
             ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
             ctx.fill();
+
+            if (pf > 0) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, pf + cf * 0.25).toFixed(3)})`;
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
     }
 
