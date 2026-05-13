@@ -7,258 +7,379 @@
     const theme = storedTheme || (prefersDark ? 'dark' : 'light');
     body.classList.toggle('dark', theme === 'dark');
 
-    const SPACING = 20;
-    const DOT_SIZE = 7.6;
-    const RADIUS = DOT_SIZE / 2;
-    const BASE_A = 0.16;
-    const CURSOR_R = 170;
-    const DISPLAY_MS = 4000;
-    const FADE_MS = 900;
+    const SPACING   = 20;
+    const DOT_SIZE  = 7.6;
+    const RADIUS    = DOT_SIZE / 2;
+    const BASE_A    = 0.16;
+    const CURSOR_R  = 170;
+    const SCROLL_SPEED = 0.019; // cols per ms  (≈ 1 col per 25ms → smooth)
 
     const footer = document.querySelector('.site-footer');
     const canvas = document.getElementById('dot-canvas');
     if (!footer || !canvas) return;
-
     const ctx = canvas.getContext('2d');
 
-    let dots = [];
-    let mouse = { x: -9999, y: -9999 };
-    let brightnessMaps = [];
-    let curIdx = 0;
-    let nextIdx = 1;
-    let fadeT = 1;
-    let lastSwitch = 0;
-    let started = false;
-    let color = { r: 31, g: 111, b: 235 };
+    let dots       = [];
+    let mouse      = { x: -9999, y: -9999 };
+    let gridCols   = 0;
+    let gridRows   = 0;
+    // scrollX: fractional column offset. Content is painted at col = contentCol - scrollX
+    let scrollX    = 0;
+    let lastTs     = null;
 
-    function clamp(val, min, max) {
-        return Math.min(max, Math.max(min, val));
-    }
+    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
 
-    function easeInOut(t) {
-        return t * t * (3 - 2 * t);
-    }
+    // ─── 5×7 dot-font glyphs (col-major bitmask, 5 cols × 7 rows) ────────────
+    // Each glyph is an array of 5 numbers, one per column.
+    // Bit 0 = top row, bit 6 = bottom row.
+    const GLYPH_H = 9; // rows used by font
+    const GLYPH_W = 5; // cols per glyph
+    const GLYPH_GAP = 1; // cols between glyphs
 
-    function parseColor(value) {
-        const trimmed = value.trim();
-        if (trimmed.startsWith('rgb')) {
-            const nums = trimmed.match(/\d+/g) || [];
-            return {
-                r: Number(nums[0] || 31),
-                g: Number(nums[1] || 111),
-                b: Number(nums[2] || 235)
-            };
-        }
-        if (trimmed.startsWith('#')) {
-            let hex = trimmed.slice(1);
-            if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('');
-            const num = parseInt(hex, 16);
-            return {
-                r: (num >> 16) & 255,
-                g: (num >> 8) & 255,
-                b: num & 255
-            };
-        }
-        return { r: 31, g: 111, b: 235 };
-    }
+    // 9-row bitmask font  (bit0 = row0 = top)
+    const FONT = {
+        'E': [0b111111111, 0b100000001, 0b100000001, 0b111110001, 0b100000001, 0b100000001, 0b111111111],
+        // Wait - let me use row-based: each char = array of 9 row strings of width 5
+        // Actually use a simple per-row approach below
+    };
 
-    function syncDotColor() {
-        const dotColor = getComputedStyle(footer).getPropertyValue('--dot-color') || '#1f6feb';
-        color = parseColor(dotColor);
-    }
+    // Simple 5-wide × 9-tall pixel font, row strings
+    const FONT5 = {
+        'E': ['#####','#....','#....','####.','#....','#....','#####','#....','#....'].slice(0,9),
+        'M': ['#...#','##.##','#.#.#','#...#','#...#','#...#','#...#','#...#','#...#'],
+        'p': ['#####','#...#','#...#','#####','#....','#....','#....','#....','#....'],
+        'o': ['.###.','#...#','#...#','#...#','#...#','#...#','.###.','#...#','#...#'],
+        'w': ['#...#','#...#','#...#','#.#.#','#.#.#','##.##','#...#','#...#','#...#'],
+        'e': ['.###.','#...#','#...#','#####','#....','#....','.###.','#...#','#...#'],
+        'r': ['#.###','##...','#....','#....','#....','#....','#....','#....','#....'],
+        'M2':['#...#','##.##','#.#.#','#.#.#','#...#','#...#','#...#','#...#','#...#'],
+    };
 
-    function getXY(nx, ny) {
-        const x = (nx - 0.5) * 2.0;
-        const y = (ny - 0.5) * 2.0;
-        return { x, y };
-    }
+    // Better approach: define each letter as array of row strings (5 wide, 9 tall)
+    const LETTERS = {
+        'E': [
+            '#####',
+            '#....',
+            '#....',
+            '####.',
+            '#....',
+            '#....',
+            '#####',
+            '.....',
+            '.....',
+        ],
+        'm': [
+            '.....',
+            '.....',
+            '#.#.#', // wait - 'm' is lowercase, 5 wide is tricky
+            '##.##',
+            '#.#.#',
+            '#.#.#',
+            '#.#.#',
+            '.....',
+            '.....',
+        ],
+        'p': [
+            '.....',
+            '.....',
+            '####.',
+            '#...#',
+            '#...#',
+            '####.',
+            '#....',
+            '#....',
+            '#....',
+        ],
+        'o': [
+            '.....',
+            '.....',
+            '.###.',
+            '#...#',
+            '#...#',
+            '#...#',
+            '.###.',
+            '.....',
+            '.....',
+        ],
+        'w': [
+            '.....',
+            '.....',
+            '#...#',
+            '#...#',
+            '#.#.#',
+            '##.##',
+            '#...#',
+            '.....',
+            '.....',
+        ],
+        'e': [
+            '.....',
+            '.....',
+            '.###.',
+            '#...#',
+            '#####',
+            '#....',
+            '.###.',
+            '.....',
+            '.....',
+        ],
+        'r': [
+            '.....',
+            '.....',
+            '#.##.',
+            '##...',
+            '#....',
+            '#....',
+            '#....',
+            '.....',
+            '.....',
+        ],
+        'M': [
+            '#...#',
+            '##.##',
+            '#.#.#',
+            '#...#',
+            '#...#',
+            '#...#',
+            '#...#',
+            '.....',
+            '.....',
+        ],
+        'v': [
+            '.....',
+            '.....',
+            '#...#',
+            '#...#',
+            '#...#',
+            '.#.#.',
+            '..#..',
+            '.....',
+            '.....',
+        ],
+    };
 
-    const SVG_SPACING = 20;
-    const SVG_ORIGIN_X = 20;
-    const SVG_ORIGIN_Y = 40;
-    const SVG_COLS = 78;
-    const SVG_ROWS = 16;
-    let gridCols = 0;
-    let gridRows = 0;
-
-    function toGrid(x, y) {
-        const col = Math.round((x - SVG_ORIGIN_X) / SVG_SPACING);
-        const row = Math.round((y - SVG_ORIGIN_Y) / SVG_SPACING);
-        return { col, row };
-    }
-
-    function makeShape(points) {
-        const cols = points.map((p) => p.col);
-        const rows = points.map((p) => p.row);
-        const minCol = Math.min(...cols);
-        const maxCol = Math.max(...cols);
-        const minRow = Math.min(...rows);
-        const maxRow = Math.max(...rows);
-        return {
-            points,
-            centerX: (minCol + maxCol) / 2,
-            centerY: (minRow + maxRow) / 2
-        };
-    }
-
-    const shapes = [
-        makeShape([
-            toGrid(720, 120), toGrid(760, 100), toGrid(800, 90), toGrid(840, 100), toGrid(880, 120),
-            toGrid(700, 140), toGrid(740, 140), toGrid(780, 140), toGrid(820, 140), toGrid(860, 140), toGrid(900, 140),
-            toGrid(700, 180), toGrid(740, 180), toGrid(780, 180), toGrid(820, 180), toGrid(860, 180), toGrid(900, 180),
-            toGrid(720, 220), toGrid(760, 220), toGrid(800, 220), toGrid(840, 220), toGrid(880, 220),
-            toGrid(740, 260), toGrid(780, 260), toGrid(820, 260), toGrid(860, 260),
-            toGrid(760, 300), toGrid(800, 300), toGrid(840, 300),
-            toGrid(800, 340)
-        ]),
-        makeShape([
-            toGrid(800, 90),
-            toGrid(700, 130), toGrid(740, 130), toGrid(780, 130), toGrid(820, 130), toGrid(860, 130), toGrid(900, 130),
-            toGrid(800, 170), toGrid(800, 210), toGrid(800, 250), toGrid(800, 290),
-            toGrid(740, 170), toGrid(720, 210),
-            toGrid(860, 170), toGrid(880, 210),
-            toGrid(680, 250), toGrid(720, 250), toGrid(760, 250),
-            toGrid(700, 290), toGrid(720, 290), toGrid(740, 290),
-            toGrid(840, 250), toGrid(880, 250), toGrid(920, 250),
-            toGrid(860, 290), toGrid(880, 290), toGrid(900, 290),
-            toGrid(760, 340), toGrid(800, 340), toGrid(840, 340)
-        ]),
-        makeShape([
-            toGrid(820, 90),
-            toGrid(800, 110), toGrid(840, 110),
-            toGrid(780, 140), toGrid(820, 140), toGrid(850, 140),
-            toGrid(790, 170), toGrid(820, 170), toGrid(850, 170),
-            toGrid(790, 210), toGrid(820, 210), toGrid(850, 210),
-            toGrid(800, 250), toGrid(790, 290), toGrid(780, 330)
-        ]),
-        makeShape([
-            toGrid(800, 220),
-            toGrid(740, 170),
-            toGrid(860, 150),
-            toGrid(920, 220),
-            toGrid(860, 310),
-            toGrid(700, 270)
-        ]),
-        makeShape([
-            toGrid(740, 120), toGrid(780, 120), toGrid(820, 120), toGrid(860, 120),
-            toGrid(740, 160), toGrid(740, 200), toGrid(740, 240), toGrid(740, 280),
-            toGrid(860, 160), toGrid(860, 200), toGrid(860, 240), toGrid(860, 280),
-            toGrid(820, 160), toGrid(840, 190), toGrid(840, 230), toGrid(820, 260),
-            toGrid(830, 210)
-        ])
-    ];
-
-    function mapFromShape(shape) {
-        const map = new Float32Array(dots.length);
-        const scaleX = (gridCols - 1) / (SVG_COLS - 1);
-        const scaleY = (gridRows - 1) / (SVG_ROWS - 1);
-        const scaledPoints = shape.points.map((p) => ({
-            col: Math.round(p.col * scaleX),
-            row: Math.round(p.row * scaleY)
-        }));
-        const cols = scaledPoints.map((p) => p.col);
-        const rows = scaledPoints.map((p) => p.row);
-        const minCol = Math.min(...cols);
-        const maxCol = Math.max(...cols);
-        const minRow = Math.min(...rows);
-        const maxRow = Math.max(...rows);
-        const centerX = (minCol + maxCol) / 2;
-        const centerY = (minRow + maxRow) / 2;
-        const offsetX = Math.round((gridCols - 1) / 2 - centerX);
-        const offsetY = Math.round((gridRows - 1) / 2 - centerY);
-        const keySet = new Set(scaledPoints.map((p) => `${p.col},${p.row}`));
-
-        dots.forEach((dot, i) => {
-            const key = `${dot.col - offsetX},${dot.row - offsetY}`;
-            map[i] = keySet.has(key) ? 1 : 0;
+    // Build a glyph bitmap: array of {dc, dr} offsets (top-left = 0,0)
+    function glyphDots(char) {
+        const rows = LETTERS[char];
+        if (!rows) return [];
+        const pts = [];
+        rows.forEach((row, r) => {
+            for (let c = 0; c < row.length; c++)
+                if (row[c] === '#') pts.push({ dc: c, dr: r });
         });
-        return map;
+        return pts;
     }
 
-    function buildAllMaps() {
-        brightnessMaps = [];
-        shapes.forEach((shape) => brightnessMaps.push(mapFromShape(shape)));
-        curIdx = 0;
-        nextIdx = 1 % brightnessMaps.length;
-        fadeT = 1;
-        lastSwitch = performance.now();
-        started = true;
-    }
+    // ─── Scales of justice shape ───────────────────────────────────────────────
+    // Defined as {dc, dr} offsets within a bounding box.
+    // We'll make it roughly 13 cols wide × 13 rows tall.
+    // The canvas grid has ~21 rows; we want to vertically centre the content.
 
-    function setupCanvas() {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight || 280;
-        dots = [];
+    const SCALES_W = 13; // cols wide
+    const SCALES_H = 13; // rows tall (will be centred vertically)
 
-        const padding = Math.max(6, RADIUS + 2);
-        const usableHeight = Math.max(1, canvas.height - padding * 2);
-        const usableWidth = Math.max(1, canvas.width - padding * 2);
-        const rows = Math.max(2, Math.floor(usableHeight / SPACING) + 1);
-        const cols = Math.max(16, Math.floor(usableWidth / SPACING) + 1);
-        gridRows = rows;
-        gridCols = cols;
+    function buildScalesDots() {
+        const pts = [];
 
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                dots.push({
-                    x: padding + c * SPACING,
-                    y: padding + r * SPACING,
-                    col: c,
-                    row: r,
-                    nx: cols > 1 ? c / (cols - 1) : 0.5,
-                    ny: rows > 1 ? r / (rows - 1) : 0.5
-                });
+        // Helper to add filled rect within scales coords
+        function rect(c0, r0, c1, r1) {
+            for (let r = r0; r <= r1; r++)
+                for (let c = c0; c <= c1; c++)
+                    pts.push({ dc: c, dr: r });
+        }
+        function ellipse(cx, cy, rx, ry) {
+            const c0 = Math.floor(cx - rx), c1 = Math.ceil(cx + rx);
+            const r0 = Math.floor(cy - ry), r1 = Math.ceil(cy + ry);
+            for (let r = r0; r <= r1; r++)
+                for (let c = c0; c <= c1; c++) {
+                    const dx = (c - cx) / (rx || 0.5), dy = (r - cy) / (ry || 0.5);
+                    if (dx * dx + dy * dy <= 1.0) pts.push({ dc: c, dr: r });
+                }
+        }
+        function line(c0, r0, c1, r1, hw) {
+            const steps = Math.ceil(Math.hypot(c1 - c0, r1 - r0) * 3);
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const c = Math.round(c0 + (c1 - c0) * t);
+                const r = Math.round(r0 + (r1 - r0) * t);
+                for (let dr = -hw; dr <= hw; dr++)
+                    for (let dc = -hw; dc <= hw; dc++)
+                        pts.push({ dc: c + dc, dr: r + dr });
             }
         }
 
-        buildAllMaps();
+        // Pivot knob (top centre)
+        ellipse(6, 0.5, 1.2, 0.8);
+
+        // Horizontal beam
+        rect(0, 1, 12, 2);
+
+        // Centre pole
+        rect(5, 2, 7, 8);
+
+        // Left chain: from (3,2) down to (2,5)
+        line(3, 2, 2, 5, 0);
+
+        // Right chain: from (9,2) down to (10,5)
+        line(9, 2, 10, 5, 0);
+
+        // Left pan
+        rect(0, 5, 4, 6);
+        ellipse(2, 6.5, 2, 0.7);
+
+        // Right pan
+        rect(8, 5, 12, 6);
+        ellipse(10, 6.5, 2, 0.7);
+
+        // Base
+        rect(3, 8, 9, 9);
+        rect(2, 9, 10, 10);
+
+        // Deduplicate
+        const seen = new Set();
+        return pts.filter(p => {
+            const k = `${p.dc},${p.dr}`;
+            if (seen.has(k)) return false;
+            seen.add(k);
+            return true;
+        });
     }
 
-    function getBrightness(i) {
-        const a = brightnessMaps[curIdx] ? brightnessMaps[curIdx][i] : 0;
-        const b = brightnessMaps[nextIdx] ? brightnessMaps[nextIdx][i] : 0;
-        return a * (1 - fadeT) + b * fadeT;
+    const SCALES_DOTS = buildScalesDots();
+
+    // ─── Build the full marquee content strip ──────────────────────────────────
+    // Content: [scales] [gap] [E][m][p][o][w][e][r][M][e] [gap] [scales]
+    // Each element: { dots: [{dc,dr}], width: cols }
+
+    const GAP = 3; // cols between elements
+    const FONT_ROW_OFFSET = 2; // push font down to vertically align with scales
+
+    function buildContentStrip() {
+        // segments: array of { dots: [{dc,dr}], width }
+        const segments = [];
+
+        // Scales
+        segments.push({ dots: SCALES_DOTS, width: SCALES_W });
+        segments.push({ dots: [], width: GAP });
+
+        // Text: "EmpowerMe"
+        // Use our LETTERS map; key per character
+        const text = ['E', 'm', 'p', 'o', 'w', 'e', 'r', 'M', 'e'];
+        text.forEach(ch => {
+            const glyph = glyphDots(ch);
+            // shift glyph down so it's vertically centred relative to scales
+            const shifted = glyph.map(p => ({ dc: p.dc, dr: p.dr + FONT_ROW_OFFSET }));
+            segments.push({ dots: shifted, width: GLYPH_W });
+            segments.push({ dots: [], width: GLYPH_GAP });
+        });
+
+        segments.push({ dots: [], width: GAP });
+
+        // Second scales
+        segments.push({ dots: SCALES_DOTS, width: SCALES_W });
+
+        // Trailing gap so repeat joins smoothly
+        segments.push({ dots: [], width: GAP + 4 });
+
+        // Flatten to a single list of {dc, dr} with cumulative column offset
+        const allDots = [];
+        let col = 0;
+        segments.forEach(seg => {
+            seg.dots.forEach(p => allDots.push({ dc: p.dc + col, dr: p.dr }));
+            col += seg.width;
+        });
+
+        return { dots: allDots, totalWidth: col };
+    }
+
+    let strip = null; // { dots, totalWidth }
+
+    // ─── Canvas setup ──────────────────────────────────────────────────────────
+
+    function setupCanvas() {
+        canvas.width  = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight || 280;
+        dots = [];
+
+        const padding  = Math.max(6, RADIUS + 2);
+        const usableH  = Math.max(1, canvas.height - padding * 2);
+        const usableW  = Math.max(1, canvas.width  - padding * 2);
+        const rows = Math.max(2, Math.floor(usableH / SPACING) + 1);
+        const cols = Math.max(16, Math.floor(usableW / SPACING) + 1);
+        gridRows = rows;
+        gridCols = cols;
+
+        for (let r = 0; r < rows; r++)
+            for (let c = 0; c < cols; c++)
+                dots.push({
+                    x: padding + c * SPACING,
+                    y: padding + r * SPACING,
+                    col: c, row: r,
+                });
+
+        strip = buildContentStrip();
+        // Start scrollX so content begins just off the left edge
+        scrollX = 0;
+    }
+
+    // ─── Render ────────────────────────────────────────────────────────────────
+
+    // Vertical centre offset: place content in middle of grid rows
+    function getRowOffset() {
+        // content height: scales is 11 rows, font is 9 rows — max ~11
+        const contentH = SCALES_H;
+        return Math.max(0, Math.round((gridRows - contentH) / 2));
     }
 
     function draw(ts) {
         requestAnimationFrame(draw);
-        if (!started || !dots.length) return;
+        if (!strip) return;
 
-        const elapsed = ts - lastSwitch;
-        if (elapsed > DISPLAY_MS) {
-            curIdx = nextIdx;
-            nextIdx = (nextIdx + 1) % brightnessMaps.length;
-            lastSwitch = ts;
-            fadeT = 0;
-        } else if (elapsed > DISPLAY_MS - FADE_MS) {
-            const rawT = clamp((elapsed - (DISPLAY_MS - FADE_MS)) / FADE_MS, 0, 1);
-            fadeT = easeInOut(rawT);
+        // Advance scroll
+        if (lastTs !== null) {
+            const dt = ts - lastTs;
+            scrollX += SCROLL_SPEED * dt;
+            if (scrollX >= strip.totalWidth) scrollX -= strip.totalWidth; // seamless loop
         }
+        lastTs = ts;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const mx = mouse.x;
-        const my = mouse.y;
+        const mx = mouse.x, my = mouse.y;
+        const rowOff = getRowOffset();
+
+        // Build a Set of lit (col, row) for this frame
+        const litSet = new Set();
+        const sw = strip.totalWidth;
+
+        strip.dots.forEach(p => {
+            // Draw at two positions for seamless loop: current and current+totalWidth
+            for (let repeat = 0; repeat < 2; repeat++) {
+                const gc = Math.round(p.dc - scrollX + repeat * sw);
+                const gr = rowOff + p.dr;
+                if (gc >= 0 && gc < gridCols && gr >= 0 && gr < gridRows)
+                    litSet.add(`${gc},${gr}`);
+            }
+        });
 
         for (let i = 0; i < dots.length; i++) {
             const dot = dots[i];
-            const dx = dot.x - mx;
-            const dy = dot.y - my;
-            const dist = Math.hypot(dx, dy);
-            const cf = CURSOR_R > 0 && dist < CURSOR_R ? Math.pow(1 - dist / CURSOR_R, 2) : 0;
-            const pf = getBrightness(i);
-            const dotRadius = RADIUS;
+            const dist = Math.hypot(dot.x - mx, dot.y - my);
+            const cf   = CURSOR_R > 0 && dist < CURSOR_R
+                ? Math.pow(1 - dist / CURSOR_R, 2) : 0;
+            const lit  = litSet.has(`${dot.col},${dot.row}`) ? 1 : 0;
 
-            const baseAlpha = Math.min(1, BASE_A + cf * 0.28);
-            ctx.fillStyle = `rgba(255, 255, 255, ${baseAlpha.toFixed(3)})`;
+            const baseA = Math.min(1, BASE_A + cf * 0.28);
+            ctx.fillStyle = `rgba(255,255,255,${baseA.toFixed(3)})`;
             ctx.beginPath();
-            ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
+            ctx.arc(dot.x, dot.y, RADIUS, 0, Math.PI * 2);
             ctx.fill();
 
-            if (pf > 0) {
-                ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, pf + cf * 0.25).toFixed(3)})`;
+            if (lit > 0) {
+                const a = Math.min(1, 1.0 + cf * 0.25);
+                ctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
                 ctx.beginPath();
-                ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
+                ctx.arc(dot.x, dot.y, RADIUS, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
@@ -269,22 +390,14 @@
         mouse.x = e.clientX - rect.left;
         mouse.y = e.clientY - rect.top;
     });
-
-    canvas.addEventListener('mouseleave', () => {
-        mouse.x = -9999;
-        mouse.y = -9999;
-    });
+    canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            setupCanvas();
-            syncDotColor();
-        }, 120);
+        resizeTimer = setTimeout(() => { setupCanvas(); lastTs = null; }, 120);
     });
 
-    syncDotColor();
     setupCanvas();
     requestAnimationFrame(draw);
 })();
