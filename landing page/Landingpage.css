@@ -488,14 +488,28 @@ section { padding: 120px 64px; }
 }
 .demo-mic:hover { background: rgba(200,169,110,.22); }
 .demo-mic svg { width: 14px; height: 14px; fill: var(--accent); }
+
+/* changed css to maintain flow with the agreement page */
 .demo-submit {
-  margin-top: 14px; width: 100%;
-  background: var(--accent); color: #0a0a08;
+  margin-top: 14px;
+  width: 100%;
+  background: var(--accent);
+  color: #0a0a08;
   font-family: 'DM Sans', sans-serif;
-  font-size: 13px; font-weight: 500; letter-spacing: .06em;
-  text-transform: uppercase; padding: 14px;
-  border: none; border-radius: 6px; cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
   transition: background .2s;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 .demo-submit:hover { background: var(--accent2); }
 .demo-result {
