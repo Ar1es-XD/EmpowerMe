@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmpowerMe — Legal AI Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="Dashboard.css">
+</head>
+
+<body>
+
+    <!-- ── LEFT SIDEBAR ── -->
+    <nav class="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-logo" title="EmpowerMe">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L4 6v6c0 5.5 3.6 10.7 8 12 4.4-1.3 8-6.5 8-12V6L12 2z" />
+            </svg>
+        </div>
+
+        <button class="nav-btn active" title="Legal Assistant" aria-label="Legal Assistant">
+            <svg viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+            </svg>
+        </button>
+        <button class="nav-btn" title="My Cases" aria-label="My Cases">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="14" rx="2" />
+                <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+            </svg>
+        </button>
+        <button class="nav-btn" title="Documents" aria-label="Documents">
+            <svg viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+            </svg>
+        </button>
+        <button class="nav-btn" title="Voice History" aria-label="Voice History">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
+            </svg>
+        </button>
+
+        <div class="sidebar-divider"></div>
+
+        <button class="nav-btn" title="Rights Library" aria-label="Rights Library">
+            <svg viewBox="0 0 24 24">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5v-15A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5z" />
+            </svg>
+        </button>
+        <button class="nav-btn" title="Analytics" aria-label="Analytics">
+            <svg viewBox="0 0 24 24">
+                <path d="M18 20V10M12 20V4M6 20v-6" />
+            </svg>
+        </button>
+        <button class="nav-btn" title="Find Legal Aid" aria-label="Find Legal Aid">
+            <svg viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+            </svg>
+        </button>
+
+        <div class="sidebar-bottom">
+            <button class="nav-btn" title="Settings" aria-label="Settings">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+                </svg>
+            </button>
+            <div class="avatar-btn" title="Profile" aria-label="User profile">AJ</div>
+        </div>
+    </nav>
+
+    <!-- ── MIDDLE — CHATBOT ── -->
+    <main class="chat-panel">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-title">⚖️ Legal AI Assistant</div>
+                <div class="chat-subtitle">Voice-powered · Explains laws in plain language</div>
+            </div>
+            <div class="status-pill">
+                <div class="status-dot"></div>
+                Active session
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <!-- Bot welcome -->
+            <div class="msg bot">
+                <div class="msg-avatar">⚖</div>
+                <div>
+                    <div class="msg-bubble">
+                        Hello! I'm your <strong>EmpowerMe Legal Assistant</strong>. I can help you understand your
+                        rights, explain laws in simple terms, and guide you through your situation.<br><br>
+                        You can <strong>type or speak</strong> your legal question. I'll analyse your case and show you
+                        the outcome probabilities in real time.
+                    </div>
+                    <div class="msg-meta">EmpowerMe AI · Just now</div>
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="msg user">
+                <div class="msg-avatar">AJ</div>
+                <div>
+                    <div class="msg-bubble">
+                        My employer hasn't paid my salary for 3 months. I'm in Bangalore. What are my rights under
+                        Indian labour law?
+                    </div>
+                    <div class="msg-meta">You · 2 min ago</div>
+                </div>
+            </div>
+
+            <!-- Bot response -->
+            <div class="msg bot">
+                <div class="msg-avatar">⚖</div>
+                <div>
+                    <div class="msg-bubble">
+                        This is a clear <strong>Wages Act violation</strong>. Here's what you need to know:<br><br>
+                        Under the <strong>Payment of Wages Act, 1936</strong> and the <strong>Karnataka Shops &
+                            Establishments Act</strong>, your employer is legally obligated to pay your wages on time.
+                        Withholding 3 months of salary is a serious offence.<br><br>
+                        Your options include:<br>
+                        <span class="tag">Labour Court complaint</span>
+                        <span class="tag">Inspector of Labour</span>
+                        <span class="tag">Civil suit</span>
+                        <span class="tag">EPFO claim</span><br><br>
+                        The analysis panel on the right shows your <strong>win probability is 78%</strong> based on
+                        similar Karnataka cases. Would you like step-by-step guidance?
+                    </div>
+                    <div class="msg-meta">EmpowerMe AI · 1 min ago</div>
+                </div>
+            </div>
+
+            <!-- User -->
+            <div class="msg user">
+                <div class="msg-avatar">AJ</div>
+                <div>
+                    <div class="msg-bubble">Yes, what's the fastest option? I need the money urgently.</div>
+                    <div class="msg-meta">You · 45 sec ago</div>
+                </div>
+            </div>
+
+            <!-- Bot typing -->
+            <div class="msg bot" id="typingMsg">
+                <div class="msg-avatar">⚖</div>
+                <div>
+                    <div class="msg-bubble">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                    <div class="msg-meta">EmpowerMe AI · Analysing...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input area -->
+        <div class="chat-input-area">
+            <div class="voice-banner">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                    <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                </svg>
+                Voice mode is on — tap the mic or speak naturally
+            </div>
+            <div class="input-row">
+                <textarea class="chat-input" id="chatInput" rows="1"
+                    placeholder="Ask about your rights, a specific law, or your situation…"
+                    aria-label="Chat input"></textarea>
+                <div class="input-actions">
+                    <button class="icon-btn" title="Attach document" aria-label="Attach document">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                        </svg>
+                    </button>
+                    <button class="mic-btn" title="Voice input" aria-label="Start voice input">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                            <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
+                        </svg>
+                    </button>
+                    <button class="send-btn" id="sendBtn" title="Send message" aria-label="Send message">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="input-hint">EmpowerMe provides legal information, not legal advice. For representation, consult
+                a lawyer.</div>
+        </div>
+    </main>
+
+    <!-- ── RIGHT — ANALYSIS ── -->
+    <aside class="analysis-panel" aria-label="Case analysis">
+        <div class="analysis-header">
+            <svg viewBox="0 0 24 24">
+                <path d="M18 20V10M12 20V4M6 20v-6" />
+            </svg>
+            <span class="analysis-header-text">Case Analysis</span>
+        </div>
+
+        <!-- Win probability -->
+        <div class="analysis-section">
+            <div class="section-label">Win Probability</div>
+            <div class="gauge-container">
+                <div class="gauge-wrap">
+                    <svg class="gauge-svg" viewBox="0 0 140 80">
+                        <!-- Track -->
+                        <path d="M15 75 A55 55 0 0 1 125 75" stroke="#222e47" stroke-width="9" fill="none"
+                            stroke-linecap="round" />
+                        <!-- Fill — 78% = 0.78 * 180° arc -->
+                        <path d="M15 75 A55 55 0 0 1 125 75" stroke="url(#gaugeGrad)" stroke-width="9" fill="none"
+                            stroke-linecap="round" stroke-dasharray="173" stroke-dashoffset="38" />
+                        <defs>
+                            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#c9a84c" />
+                                <stop offset="100%" stop-color="#2ecc8e" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Needle dot -->
+                        <circle cx="112" cy="38" r="4" fill="#2ecc8e" />
+                    </svg>
+                    <div class="gauge-num">78%</div>
+                </div>
+                <div class="gauge-label">Likelihood of favourable outcome</div>
+                <div class="gauge-trend">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                        <polyline points="17 6 23 6 23 12" />
+                    </svg>
+                    +12% vs similar cases this month
+                </div>
+            </div>
+        </div>
+
+        <!-- Case strength -->
+        <div class="analysis-section">
+            <div class="section-label">Case Strength Factors</div>
+            <div class="strength-bar-item">
+                <div class="strength-bar-header">
+                    <span class="strength-bar-label">Evidence of non-payment</span>
+                    <span class="strength-bar-val text-success">Strong</span>
+                </div>
+                <div class="strength-bar-track">
+                    <div class="strength-bar-fill fill-success w-90"></div>
+                </div>
+            </div>
+            <div class="strength-bar-item">
+                <div class="strength-bar-header">
+                    <span class="strength-bar-label">Legal documentation</span>
+                    <span class="strength-bar-val text-gold">Good</span>
+                </div>
+                <div class="strength-bar-track">
+                    <div class="strength-bar-fill fill-gold w-72"></div>
+                </div>
+            </div>
+            <div class="strength-bar-item">
+                <div class="strength-bar-header">
+                    <span class="strength-bar-label">Employer defences</span>
+                    <span class="strength-bar-val text-warning">Moderate</span>
+                </div>
+                <div class="strength-bar-track">
+                    <div class="strength-bar-fill fill-warning w-40"></div>
+                </div>
+            </div>
+            <div class="strength-bar-item">
+                <div class="strength-bar-header">
+                    <span class="strength-bar-label">Jurisdictional clarity</span>
+                    <span class="strength-bar-val text-success">High</span>
+                </div>
+                <div class="strength-bar-track">
+                    <div class="strength-bar-fill fill-success w-85"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicable laws -->
+        <div class="analysis-section">
+            <div class="section-label">Applicable Laws</div>
+            <div class="tag-cloud">
+                <span class="legal-tag blue">Payment of Wages Act 1936</span>
+                <span class="legal-tag blue">KS&E Act 1961</span>
+                <span class="legal-tag amber">Industrial Disputes Act</span>
+                <span class="legal-tag green">Labour Court Jurisdiction</span>
+                <span class="legal-tag blue">EPFO Act 1952</span>
+                <span class="legal-tag amber">IPC §406 (if wilful)</span>
+            </div>
+        </div>
+
+        <!-- Risk level -->
+        <div class="analysis-section">
+            <div class="section-label">Risk Assessment</div>
+            <div class="risk-pills">
+                <div class="risk-pill filled"></div>
+                <div class="risk-pill filled"></div>
+                <div class="risk-pill filled warn"></div>
+                <div class="risk-pill"></div>
+                <div class="risk-pill"></div>
+            </div>
+            <div class="risk-meta">
+                <span>Low risk</span>
+                <span class="text-warning text-semibold">Moderate (3/5)</span>
+                <span>High risk</span>
+            </div>
+        </div>
+
+        <!-- Recommended steps -->
+        <div class="analysis-section">
+            <div class="section-label">Recommended Next Steps</div>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Send a formal <strong class="text-gold-light">legal notice</strong>
+                        to employer within 7 days</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-text">File complaint with <strong class="text-gold-light">Karnataka Labour
+                            Inspector</strong> — free, fast</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Collect payslips, offer letter, bank statements as evidence</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-text">Consider <strong class="text-gold-light">Labour Court</strong> if no
+                        response in 15 days</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Similar cases -->
+        <div class="analysis-section">
+            <div class="section-label">Similar Resolved Cases</div>
+            <div class="case-card">
+                <div class="case-name">Rajan v. Infosys BPO Ltd. 2023</div>
+                <div class="case-meta">
+                    <span>Karnataka Labour Court</span>
+                    <span class="case-outcome">Won ✓</span>
+                </div>
+            </div>
+            <div class="case-card">
+                <div class="case-name">Sharma v. Tech Mahindra 2022</div>
+                <div class="case-meta">
+                    <span>Bangalore HC</span>
+                    <span class="case-outcome">Settled ✓</span>
+                </div>
+            </div>
+            <div class="case-card">
+                <div class="case-name">Priya v. StartupXYZ Pvt 2024</div>
+                <div class="case-meta">
+                    <span>Labour Court</span>
+                    <span class="case-outcome">Won ✓</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <strong>⚠ Disclaimer:</strong> This is AI-generated legal information for awareness purposes only. It does
+            not constitute legal advice. For your specific situation, please consult a licensed advocate.
+        </div>
+    </aside>
+
+    <script src="Dashboard.js"></script>
+</body>
+
+</html>
