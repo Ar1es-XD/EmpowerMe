@@ -530,3 +530,219 @@ body.dark {
     font-size: 13px;
   }
 }
+
+
+
+/* ═════════════════════════════════════
+   EXTRA RESPONSIVE DESIGN
+═════════════════════════════════════ */
+
+/* Large Tablets */
+@media (max-width: 1024px) {
+
+  .auth-wrapper {
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .auth-card {
+    padding: 42px 36px;
+  }
+
+  .nav-pill {
+    width: auto;
+    max-width: 92%;
+  }
+}
+
+
+/* Tablets */
+@media (max-width: 768px) {
+
+  body {
+    padding: 110px 20px 50px;
+  }
+
+  .auth-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .auth-card {
+    width: 100%;
+    padding: 36px 28px;
+    border-radius: 22px;
+  }
+
+  .auth-heading {
+    font-size: 32px;
+  }
+
+  .auth-sub {
+    font-size: 14px;
+  }
+
+  .nav-pill {
+    width: 94%;
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .menu-pill {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  .theme-pill {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .nav-cta-pill {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .percent-pill {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .field-row {
+    flex-direction: column;
+  }
+}
+
+
+/* Mobile Devices */
+@media (max-width: 540px) {
+
+  body {
+    padding: 95px 14px 40px;
+  }
+
+  .auth-wrapper {
+    width: 100%;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+    border-radius: 18px;
+  }
+
+  .auth-logo {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .auth-heading {
+    font-size: 26px;
+    line-height: 1.15;
+  }
+
+  .auth-sub {
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+
+  .field-label {
+    font-size: 11px;
+  }
+
+  .field-input {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .btn-submit {
+    padding: 14px 18px;
+    font-size: 11px;
+  }
+
+  .btn-social {
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+
+  .terms-note,
+  .auth-switch {
+    font-size: 12px;
+  }
+
+  .nav-pill {
+    width: 95%;
+    padding: 10px 12px;
+    border-radius: 999px;
+    gap: 6px;
+  }
+
+  .menu-pill {
+    font-size: 12px;
+    gap: 6px;
+    padding: 5px 8px;
+  }
+
+  .hamburger {
+    font-size: 18px;
+  }
+
+  .theme-pill {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .nav-cta-pill {
+    padding: 7px 12px;
+    font-size: 10px;
+  }
+
+  .percent-pill {
+    display: none;
+  }
+
+  .menu-panel {
+    width: 210px;
+  }
+}
+
+
+/* Small Phones */
+@media (max-width: 380px) {
+
+  .auth-card {
+    padding: 24px 16px;
+  }
+
+  .auth-heading {
+    font-size: 22px;
+  }
+
+  .auth-sub {
+    font-size: 12px;
+  }
+
+  .field-input {
+    font-size: 12px;
+  }
+
+  .btn-submit {
+    font-size: 10px;
+    letter-spacing: .08em;
+  }
+
+  .nav-pill {
+    width: 96%;
+    padding: 8px 10px;
+  }
+
+  .nav-cta-pill {
+    padding: 6px 10px;
+    font-size: 9px;
+  }
+
+  .menu-pill {
+    font-size: 11px;
+  }
+}
