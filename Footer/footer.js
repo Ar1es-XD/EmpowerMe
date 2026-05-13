@@ -12,7 +12,7 @@
     const RADIUS    = DOT_SIZE / 2;
     const BASE_A    = 0.16;
     const CURSOR_R  = 170;
-    const SCROLL_SPEED = 0.019; // cols per ms  (≈ 1 col per 25ms → smooth)
+    const SCROLL_SPEED = 0.014; // cols per ms  (≈ 1 col per 25ms → smooth)
 
     const footer = document.querySelector('.site-footer');
     const canvas = document.getElementById('dot-canvas');
